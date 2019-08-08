@@ -1,0 +1,1 @@
+sed -i "s/CFLAGS =\"\(.*\)\"/CFLAGS = \1/g" $(find . -iname Makefile)

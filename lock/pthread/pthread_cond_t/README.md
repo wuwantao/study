@@ -1,0 +1,1 @@
+简单测试pthread_cond_t
