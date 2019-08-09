@@ -1,3 +1,4 @@
+CFLAGS +=
 cur_path = 
 define get_template_path
 $(if $(root_dir),,\
@@ -15,3 +16,4 @@ $(call get_template_path)
 else
 	include $(root_dir)/template.mk
 endif
+
