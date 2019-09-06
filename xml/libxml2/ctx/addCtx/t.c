@@ -16,8 +16,7 @@ int tim_subtract(struct timeval *result, struct timeval *x, struct timeval *y)
         return -1;
     result->tv_sec = (y->tv_sec - x->tv_sec);
     result->tv_usec = (y->tv_usec - x->tv_usec);
-    if (result->tv_usec < 0)
-    {
+    if (result->tv_usec < 0) {
         result->tv_sec--;
         result->tv_usec += 1000000;
     }
@@ -30,23 +29,19 @@ xmlXPathObjectPtr getNodeset(xmlDocPtr pdoc, const xmlChar *xpath)
     context = xmlXPathNewContext(pdoc);//用xml文档指针来初始化context指针
     xmlXPathObjectPtr result = NULL; //定义XPath结果指针
 
-    if (pdoc == NULL)
-    {
+    if (pdoc == NULL) {
         printf("pdoc is NULL\n");
         return NULL;
     }
 
-    if (xpath)
-    {
-        if (context == NULL)
-        {
+    if (xpath) {
+        if (context == NULL) {
             printf("context is NULL\n");
             return NULL;
         }
 
         result = xmlXPathEvalExpression(xpath, context);//计算xpath的查询结果,并存入result中
-        if (result == NULL)
-        {
+        if (result == NULL) {
             printf("xmlXPathEvalExpression return NULL\n");
             return NULL;
         }
@@ -66,8 +61,8 @@ xmlXPathObjectPtr getNodeset(xmlDocPtr pdoc, const xmlChar *xpath)
 
 int main(int argc, char **argv)
 {
-    struct timeval t1,t2,diff;
-    gettimeofday(&t1,0);
+    struct timeval t1, t2, diff;
+    gettimeofday(&t1, 0);
     xmlDocPtr pdoc = NULL;//文档指针
     xmlNodePtr proot = NULL;//节点指针
 
@@ -78,9 +73,9 @@ int main(int argc, char **argv)
     //XML_PARSE_NOWARNING    = 1<<6,    suppress warning reports    不输出警告日志
     //XML_PARSE_PEDANTIC    = 1<<7,          pedantic error reporting */    输出详细的错误日志
     //XML_PARSE_NOERROR和XML_PARSE_NOWARNING的功能是“当运行命令行程序时不输出错误/警告日志”。
-    pdoc = xmlReadFile("1.xml", "UTF-8", XML_PARSE_RECOVER); 
-    if (pdoc == NULL)
-    {
+    //pdoc = xmlReadFile("1.xml", "UTF-8", XML_PARSE_RECOVER);
+    pdoc = xmlReadFile("1.xml", "UTF-8", XML_PARSE_NOBLANKS);
+    if (pdoc == NULL) {
         printf("error:can't open file!\n");
         exit(1);
     }
@@ -88,53 +83,42 @@ int main(int argc, char **argv)
     /*****************获取xml文档对象的根节对象********************/
     proot = xmlDocGetRootElement(pdoc);
 
-    if (proot == NULL) 
-    {
+    if (proot == NULL) {
         printf("error: file is empty!\n");
         exit(1);
     }
 
     /*****************查找书店中所有书籍的名称********************/
-    xmlChar *xpath = BAD_CAST ("/producttype/product/*"); //xpath语句,路径为product的所有子元素
+    xmlChar *xpath = BAD_CAST ("/producttype/product[1]/writer"); //xpath语句,路径为product的所有子元素
     xmlXPathObjectPtr result = getNodeset(pdoc, xpath); //调用函数,查询XPath表达式,得到一个查询结果
-    if (result == NULL)
-    {
+    if (result == NULL) {
         printf("result is NULL\n");
         exit(1);
     }
 
-    if (result)
-    {
+    if (result) {
         xmlNodeSetPtr nodeset = result->nodesetval; //获取查询到的节点指针集合,其中包含了所有符合Xpath查询结果的节点；
         xmlNodePtr cur;//声明一个临时的当前结点指针
 
         //nodeset->nodeNr是集合元素总数,for遍历每个符合结果的结点
         int i;
-        for (i = 0; i < nodeset->nodeNr; i++)
-        {
+        for (i = 0; i < nodeset->nodeNr; i++) {
             cur = nodeset->nodeTab[i];//遍历
 
             /**************接下来就是使用libxml2函数进行结点的操作**********/
-            while (cur != NULL)
-            {
+            while (cur != NULL) {
                 //查找名为write的结点,并输出其内容
-                if (!xmlStrcmp(cur->name, BAD_CAST ("write")))//xmlStrcmp为对比,相同时返回值为0
-                {
-                    printf("write: %s\n",
-                            ((char*) xmlNodeGetContent(cur)));//xmlNodeGetContent为获得某结点的内容
+                if (!xmlStrcmp(cur->name, BAD_CAST ("writer"))) { //xmlStrcmp为对比,相同时返回值为0
+                    printf("writer: %s\n",
+                           ((char*) xmlNodeGetContent(cur)));//xmlNodeGetContent为获得某结点的内容
+                    xmlNodeAddContent(cur, "xxxx");
                     break;
                 }
-
-                //创建结点,结点名称为CHILD
-                xmlNodePtr child=xmlNewNode(NULL,BAD_CAST"CHILD");
-                //设置其内容和属性
-                xmlNodeSetContent(child,BAD_CAST"子节点");
-                xmlSetProp(child,BAD_CAST"属性名",BAD_CAST"属性内容");
+                /*
                 //移除属性,返回0成功,-1失败,每次只能移除一个属性
-                int i;
-                i=xmlRemoveProp(cur);
+                int j;
+                j=xmlRemoveProp(cur);
                 //将child添加给cur为子结点
-                xmlAddChild(cur,child);
 
                 //创建并直接添加子节点
                 xmlNewTextChild(cur, NULL, BAD_CAST "结点名称", BAD_CAST "结点内容");
@@ -148,20 +132,21 @@ int main(int argc, char **argv)
                     cur = tempNode;
                     continue;
                 }
+                */
                 cur = cur->next;
             }
         }
 
         xmlXPathFreeObject(result); //释放结果指针
     }
-    gettimeofday(&t2,0);
-    int ret=tim_subtract(&diff,&t1,&t2);
-    if(ret>-1)
-    {
-        printf("用时%dsec\t%dusec\n",diff.tv_sec,diff.tv_usec);
+    gettimeofday(&t2, 0);
+    int ret = tim_subtract(&diff, &t1, &t2);
+    if (ret > -1) {
+        printf("用时%dsec\t%dusec\n", diff.tv_sec, diff.tv_usec);
     }
     //存储xml文档
-    int nRel = xmlSaveFile("NewFile.xml", pdoc);
+    //int nRel = xmlSaveFile("NewFile.xml", pdoc);
+    int nRel = xmlSaveFormatFile("NewFile.xml", pdoc, 1);
     /*****************释放资源********************/
     xmlFreeDoc(pdoc);
     xmlCleanupParser();

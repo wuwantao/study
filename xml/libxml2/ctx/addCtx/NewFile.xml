@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<producttype>
+  <product category="PHP">
+    <id>1001</id>
+    <no>NOC0001</no>
+    <name>PHP高级设计教程</name>
+    <price>88.99</price>
+    <writer><name>zhang</name><sex>男</sex>xxxx</writer>
+    <time>2015.12.30</time>
+  </product>
+  <product category="JAVA">
+    <id>1002</id>
+    <no>NOC0002</no>
+    <name>Thinking inJava</name>
+    <price>102.99</price>
+    <writer>
+      <name>zhang</name>
+      <sex>男</sex>
+    </writer>
+    <time>2004.03.30</time>
+  </product>
+  <product category="WEB">
+    <id>1003</id>
+    <no>NOC0003</no>
+    <name>WEB高级开发教程</name>
+    <price>78.99</price>
+    <writer>
+      <name>zhang</name>
+      <sex>男</sex>
+    </writer>
+    <time>2012.07.30</time>
+  </product>
+</producttype>
