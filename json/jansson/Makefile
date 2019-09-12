@@ -1,18 +1,6 @@
-CFLAGS +=  -lpthread -ljansson -lcurl
-cur_path = 
-define get_template_path
-$(if $(root_dir),,\
-	$(eval tmp_str =$(cur_path)../)\
-	$(eval root_dir = $(shell find $(tmp_str) -iname template.mk|head -n 1))\
-	$(eval cur_path=$(tmp_str))\
-	$(if $(root_dir),,$(call get_template_path))\
-	)
-endef
-
-
-ifeq ($(root_dir),) 
-$(call get_template_path)
-	include $(root_dir)
-else
-	include $(root_dir)/template.mk
-endif
+.PHONY:all clean
+subdirs := $(subst ./,,$(shell find . -maxdepth 5 -type d|sed -e '1d'))
+all: $($(dname)_objs) 
+	@for dir in $(subdirs); do if [ -f $$dir/Makefile ]; then $(MAKE) -C $$dir; fi; done
+clean: $($(dname)_objs)
+	@for dir in $(subdirs); do if [ -f $$dir/Makefile ]; then $(MAKE) -C $$dir clean; fi; done
