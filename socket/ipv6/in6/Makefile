@@ -1,4 +1,4 @@
-CFLAGS +=  -lpthread -ljansson -lcurl -g
+CFLAGS +=   -g 
 cur_path = 
 define get_template_path
 $(if $(root_dir),,\
