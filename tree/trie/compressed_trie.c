@@ -185,7 +185,7 @@ trie_node_t *search2(trie_node_t *root, const char *word)
 }
 
 
-int main()
+int main(int argc, char *argv[])
 {
     clock_t startTime, endTime;
     FILE *fp = NULL;
@@ -194,7 +194,13 @@ int main()
     root = malloc(sizeof(trie_node_t));
     memset(root, 0, sizeof(trie_node_t));
     
-    fp = fopen("file.txt", "r");
+    if (argc != 2) {
+        printf("argv must be 2\n./t file.txt\n");
+        return -1;
+    }
+    
+    fp = fopen(argv[1], "r");
+
     
     if (fp == NULL) {
         printf("fopen failed.\n");

@@ -4,12 +4,12 @@
 #include <stdbool.h>
 #include "list.h"
 
-#define CNT (1<<24)
+#define CNT (1<<20)
 
 struct hlist_head dns_hlist[CNT];
 
 typedef struct dns_node {
-    char dns[256];
+    char dns[128];
     uint16_t len;
     struct hlist_node hnode;
     struct dns_node *parent;
@@ -234,7 +234,7 @@ int main(int argc, char *argv[])
         return -1;
     }
     
-    nodes = malloc(sizeof(*nodes) * 10000000);
+    nodes = malloc(sizeof(*nodes) * 610*10000);
     
     while (fgets(line, 1024, fp) != NULL) {
         line[strlen(line) - 1] = 0;
