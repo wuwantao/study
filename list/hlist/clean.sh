@@ -1,2 +1,2 @@
 #!/bin/bash
-rm -rf dns dns_static dns_static_more
+rm -rf dns dns_static_more_times dns_static_more_level

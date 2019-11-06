@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include "list.h"
 
-#define CNT (1<<25)
+#define CNT (1<<24)
 
 struct hlist_head dns_hlist[CNT];
 
@@ -149,7 +149,6 @@ int main(int argc, char *argv[])
     while (fgets(line, 1024, fp) != NULL) {
         line[strlen(line) - 1] = 0;
         add_more(line);
-//        hash_add(line, strlen(line));
         size ++;
     }
     

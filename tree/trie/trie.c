@@ -16,6 +16,7 @@ char   n[128] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,2
 char idx[128] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,1,-1,2,3,4,5,6,7,8,9,10,11,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,-1,-1,-1,-1,-1};
 
 trie_node_t *root;
+trie_node_t *nodes;
 
 void insert(char *str);
 bool search(char*str);
@@ -47,7 +48,7 @@ void insert(char *str)
     for (int i = 0; str[i]; i++) {
         tmp = &tt->branch[idx[str[i]]];
         if (*tmp == NULL) {
-            *tmp = malloc(sizeof(trie_node_t));
+            *tmp = nodes + node_count;//malloc(sizeof(trie_node_t));
             memset(*tmp, 0, sizeof(trie_node_t));
             node_count++;
         }
@@ -73,7 +74,7 @@ bool search(char *str)
     return false;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
     clock_t startTime, endTime;
     FILE *fp = NULL;
@@ -82,7 +83,19 @@ int main()
     root = malloc(sizeof(trie_node_t));
     memset(root, 0, sizeof(trie_node_t));
     
-    fp = fopen("file.txt", "r");
+    if (argc != 2) {
+        printf("argv must be 2\n./t file.txt\n");
+        return -1;
+    }
+    nodes = malloc(sizeof(*nodes) * 610*10000);
+
+    if (nodes == NULL) {
+        printf("malloc nodes failed.\n");
+        return -1;
+    }
+    
+    fp = fopen(argv[1], "r");
+
     
     if (fp == NULL) {
         printf("fopen failed.\n");

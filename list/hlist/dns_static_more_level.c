@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include "list.h"
 
-#define CNT (1<<20)
+#define CNT (1<<24)
 
 struct hlist_head dns_hlist[CNT];
 

@@ -118,7 +118,6 @@ int main(int argc, char *argv[])
             printf("not find dns. dns:%s\n", line);
             break;
         }
-//        printf("line:%s\n", line);
         size++;
     }
 
