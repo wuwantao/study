@@ -1,4 +1,4 @@
-CFLAGS +=  -std=c99 -O3
+CFLAGS +=  -std=gnu99 -O0 -g
 cur_path = 
 define get_template_path
 $(if $(root_dir),,\
