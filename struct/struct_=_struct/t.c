@@ -13,14 +13,26 @@ int main()
 
     test_t B;
 
-    A.a = 12;
-    strcpy(A.b, "hello");
+    A.a = 65;
+    strcpy(A.b, "AAAAAAAAA");
 
-    B.a = 13;
-    strcpy(B.b, "world");
+    B.a = 66;
+    strcpy(B.b, "BBBBBBBBB");
 
     B=A;
     
+    printf("B.a:%d\n",B.a);
+    printf("B.b:%s\n",B.b);
+
+    B.a = 66;
+    strcpy(B.b, "BBBBBBBBB");
+
+    test_t *a = &A;
+    test_t *b = &B;
+
+
+    *b = *a;
+
     printf("B.a:%d\n",B.a);
     printf("B.b:%s\n",B.b);
 
