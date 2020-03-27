@@ -1,0 +1,69 @@
+#!/bin/bash
+#
+# fpga_agentd		start/stop manager
+#
+# Authors: pu li, 2013, <pu.li@yamutech.com>
+#
+# chkconfig: 345 13 87
+# description: fpga_agentd start/stop manager
+#
+# processname: /usr/bin/fpga_agentd
+
+# source function library
+. /etc/rc.d/init.d/functions
+
+PROG=fpga_agent
+LOCKFILE=/var/lock/subsys/$PROG
+DESC="Yamu fpga_agent Server"
+ 
+start() {
+    [ -x /usr/bin/$PROG ] || exit 5
+    [ -f /etc/fpga_agent.ini ] || exit 6
+    [ -z "`pidof $PROG`" ] || exit 0
+
+    echo -n "Starting $DESC: "
+    daemon $PROG
+    RETVAL=$?
+    echo
+
+    [ $RETVAL -eq 0 ] && touch $LOCKFILE
+    return $RETVAL
+}
+
+stop() {
+    [ ! -z "`pidof $PROG`" ] || return 0
+
+    echo -n "Stopping $DESC: "
+    $PROG -k
+    RETVAL=$?
+    echo
+
+    [ $RETVAL -eq 0 ] || echo $RETVAL
+    sleep 2
+
+    [ -z "`pidof $PROG`" ] || kill -9 `pidof $PROG`
+    rm -rf $LOCKFILE
+    return $RETVAL
+}
+
+case "$1" in
+    start)
+        start
+        RETVAL=$?
+        ;;
+    stop)
+        stop
+        RETVAL=$?
+        ;;
+    restart)
+        stop
+        start
+        RETVAL=$?
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        RETVAL=2
+        ;;
+esac
+
+exit $RETVAL

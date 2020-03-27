@@ -1,0 +1,75 @@
+Summary: YAMU fpga_agent
+Name: fpga_agentd
+Version: @VERSION@
+Release: @RELEASE@
+License: GPL
+Packager: wt.wu <wt.wu@yamutech.com>
+Vendor:	yamutech dist-repo <www.yamutech.com/repo>
+Url: http://www.yamutech.com
+Source: fpga_agentd-%{version}.tar.gz
+Group: Applications/Internet
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+Source5: fpga_agentd
+Requires: glib2 = 2.42.2 glibc = 2.12
+
+%description
+YAMU fpga_agent IPAM 
+
+%prep
+%setup -q -n fpga_agentd-%{version}
+# %%configure
+
+%build
+# %%{__make} CFLAGS="$RPM_OPT_FLAGS" %{?_smp_mflags}
+%{__make} -C build all
+
+%define fpga_agent_conf %{_sysconfdir}/fpga_agentd.ini
+
+%pre
+if [ -f %{fpga_agent_conf} ];then mv %{fpga_agent_conf}  %{fpga_agent_conf}.old;fi
+
+%install
+rm -rf %{buildroot}
+mkdir -p %{buildroot}
+%{__make} -C build BUILD_PATH=%{buildroot} install
+
+mkdir -p ${RPM_BUILD_ROOT}/var/log/fpga_agent
+
+mkdir -p ${RPM_BUILD_ROOT}/etc/init.d
+install -m 644 %{SOURCE5} ${RPM_BUILD_ROOT}/etc/init.d/fpga_agentd
+
+%clean
+rm -rf ${RPM_BUILD_ROOT}
+
+%post
+
+
+if [ "$1" = "1" ]
+then
+   chkconfig --add fpga_agentd
+fi
+
+mv %{fpga_agent_conf}  %{fpga_agent_conf}.new
+if [ -f %{fpga_agent_conf}.old ];then mv %{fpga_agent_conf}.old  %{fpga_agent_conf};else mv %{fpga_agent_conf}.new %{fpga_agent_conf};fi
+
+%files 
+%defattr(-,root,root,-)
+%{_bindir}/fpga_agent
+%defattr(664,root,root,-)
+%{_sysconfdir}/fpga_agentd.ini
+%defattr(755,root,root,-)
+%{_sysconfdir}/init.d/fpga_agentd
+
+
+%postun
+
+%preun
+if [ "$1" = "0" ]
+then
+	chkconfig --del fpga_agentd
+fi
+
+
+%define __debug_install_post   \
+   %{_rpmconfigdir}/find-debuginfo.sh %{?_find_debuginfo_opts} "%{_builddir}/%{?buildsubdir}"\
+%{nil}
