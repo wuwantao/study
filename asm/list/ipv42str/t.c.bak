@@ -1,0 +1,57 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+#include <stdlib.h>
+
+/*
+    asm volatile(
+            "movq $0x3139322e3136382e, %%rax;"
+            "movq %%rax, %[ip_str];"
+            :[ip_str]"=m"(ip_str)::"rax");
+*/
+
+typedef struct uint8_str {
+    uint8_t str[7];
+    uint8_t len;
+} uint8_str_t;
+uint8_str_t *uint8_str = NULL;
+
+int main()
+{
+    uint32_t ip = 0xc0a80101;   //192.168.1.1
+    char ip_str[64] = {0};
+    uint8_t i = 0;
+    uint8_str_t *p = NULL;
+
+    uint8_str = (uint8_str_t*) malloc(sizeof(uint8_str_t) * 255);
+
+    for (i = 0; i < 255; i++) {
+        p = uint8_str + i * sizeof(uint8_str_t);
+        sprintf(p->str, "%d", i);
+        p->len = strlen(p->str);
+    }
+
+
+    asm volatile("movw $0xc0, %ax");
+    asm volatile("movb $100, %cl");
+    asm volatile("div %cl");
+    asm volatile("xor %rdx, %rdx");
+    asm volatile("movb %al, %dh"); //   1
+    asm volatile("add $0x30, %dh");//   1
+    asm volatile("movb %ah, %dl"); //   92
+    asm volatile("xor %ax, %ax");
+    asm volatile("movb %dl, %al"); //   92
+    asm volatile("movb $10, %cl");
+    asm volatile("div %cl");
+    asm volatile("movb %al, %dl"); //9
+    asm volatile("add $0x30, %dl"); //9
+    asm volatile("shl $16, %edx");
+    asm volatile("movb %ah, %dh");
+    asm volatile("add $0x30, %dh");
+    asm volatile("movb $0x2e, %dl");
+    asm volatile("movl %%edx, %0":"=m"(ip_str)::);
+
+    printf("ip_str:%s\n", ip_str);
+
+}

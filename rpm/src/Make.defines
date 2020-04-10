@@ -1,0 +1,25 @@
+ROOT=$(shell cd .. && pwd)
+OBJS_DIR=$(ROOT)/build/obj
+
+$(shell mkdir -p $(OBJS_DIR))
+
+# compile
+CROSS_COMPILE=
+CXX=gcc
+
+INCLUDES = -I$(ROOT)/include \
+        -I$(ROOT)/include/glib-2.0 \
+        -I$(ROOT)/lib/clib/include \
+        -I$(ROOT)/src/thrift/gen-c_glib
+
+CFLAGS := -g -Wall -Wno-strict-aliasing -O3
+
+LIBS = -L$(ROOT)/lib \
+        -lpthread
+
+CFLAGS += $(INCLUDES) $(LIBS)
+
+COMPILE := $(CROSS_COMPILE)$(CXX) -MMD -c -o
+LINKCC := $(CROSS_COMPILE)$(CXX)
+
+export
