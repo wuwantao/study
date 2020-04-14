@@ -3,9 +3,11 @@
 #include <string.h>
 #include <arpa/inet.h>
 
+int i = 1;
 struct in_addr  in4_addr;
 struct in6_addr in6_addr;
-char str[128];
+char str1[128];
+char str2[128] ="hello";
 int main() 
 {
 	int ret = 0;
