@@ -418,11 +418,45 @@ bool send_dns2(uint8_t *out_buf, uint32_t out_len)          //ok
     return true;
 }
 
+ldns_rr * create_subnet_rr(void){
+	static uint32_t ip = 0;
+	ldns_rr * edns_rr = ldns_rr_new();
+	ldns_rdf * option_code = ldns_native2rdf_int16(LDNS_RDF_TYPE_INT16, 8);
+	ldns_rr_push_rdf(edns_rr, option_code);
+
+	ldns_rdf * option_len = ldns_native2rdf_int16(LDNS_RDF_TYPE_INT16, 8);
+	ldns_rr_push_rdf(edns_rr, option_len);
+	
+	ldns_rdf * family = ldns_native2rdf_int16(LDNS_RDF_TYPE_INT16, 1);
+	ldns_rr_push_rdf(edns_rr, family);
+	
+	ldns_rdf * source_netmask = ldns_native2rdf_int8(LDNS_RDF_TYPE_INT8, 32);
+	ldns_rr_push_rdf(edns_rr, source_netmask);
+
+	ldns_rdf * scope_netmask = ldns_native2rdf_int8(LDNS_RDF_TYPE_INT8, 0);
+	ldns_rr_push_rdf(edns_rr,scope_netmask);
+
+	ldns_rdf * client_subnet = ldns_native2rdf_int32(LDNS_RDF_TYPE_INT32,ip++);
+
+	ldns_rr_push_rdf(edns_rr,client_subnet);
+	
+	ldns_rr_set_type(edns_rr, LDNS_RR_TYPE_OPT);
+	edns_rr->_rr_class = 4096;
+	ldns_rr_set_ttl(edns_rr, 0);
+	ldns_rdf *edns_name ;
+	ldns_str2rdf_dname(&edns_name,".");
+	ldns_rr_set_owner(edns_rr, edns_name);
+	return edns_rr;
+}
+
+
 bool mkdir_dns(const uint8_t *dnspkt, int dnspkt_len, uint8_t **out_buf, uint32_t *out_len)
 {
     ldns_pkt *in_pkt = NULL;
     ldns_rr_list *info = NULL;
     ldns_status status = LDNS_STATUS_OK;
+
+    
     
     status = ldns_wire2pkt(&in_pkt, dnspkt, dnspkt_len);
     
@@ -430,7 +464,12 @@ bool mkdir_dns(const uint8_t *dnspkt, int dnspkt_len, uint8_t **out_buf, uint32_
         printf("Error creating ldns_pkt: %s\n", ldns_get_errorstr_by_id(status));
         goto FAIL;
     }
-    
+
+
+	/*构造edns*/
+	ldns_rr *edns_rr = create_subnet_rr();
+	ldns_pkt_push_rr(in_pkt, LDNS_SECTION_ADDITIONAL, edns_rr);    
+
     status = ldns_pkt2wire(out_buf, in_pkt, (size_t *)out_len);
     
     if (status != LDNS_STATUS_OK) {
