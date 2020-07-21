@@ -101,7 +101,7 @@ int main()
     epfd = epoll_create(256);                           //生成用于处理accept的epoll专用的文件描述符, 指定生成描述符的最大范围为256
     listenfd = socket(AF_INET, SOCK_DGRAM, 0);
     setnonblocking(listenfd);                           //把用于监听的socket设置为非阻塞方式
-    printf("listenfd:%d\n", listenfd);
+    printf("listenfd:%d\n", listenfd);
 
     ev.data.fd = listenfd;                              //设置与要处理的事件相关的文件描述符
     ev.events = EPOLLIN | EPOLLET;                      //设置要处理的事件类型
