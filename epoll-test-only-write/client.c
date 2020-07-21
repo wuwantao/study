@@ -42,15 +42,9 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Connect error:%s\n", strerror(errno));
         exit(1);
     }
+        strcpy(sendbuffer, "Please input your word:\n");
     while (1) {
-        printf("Please input your word:\n");
-        scanf("%s", sendbuffer);
-        printf("\n");
-        if (strcmp(sendbuffer, "quit") == 0)
-            break;
         send(sockfd, sendbuffer, sizeof(sendbuffer), 0);
-        recv(sockfd, recvbuffer, 200, 0);
-        printf("recv data of my world is :%s\n", recvbuffer);
     }
 
     close(sockfd);
