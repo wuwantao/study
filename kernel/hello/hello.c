@@ -7,6 +7,10 @@ MODULE_DESCRIPTION("Hello world module");
 
 static int __init hello_init(void)
 {
+    int i = 0;
+    while(1) {
+        i++;
+    }
 printk(KERN_ERR "hello world!\n");
 return 0;
 }
