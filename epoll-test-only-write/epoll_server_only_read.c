@@ -134,39 +134,37 @@ int main()
                     printf("error:sockfd:%d\n", sockfd);
                     continue;
                 }
-                
-                readlen = recvfrom(sockfd, line, MAXLINE, 0, (struct sockaddr *)&clientaddr, &clilen);
-                if (readlen < 0) {
-                    printf("error:readlen:%d\n", readlen);
-                    /* If errno == EAGAIN, that means we have read all
-                             data. So go back to the main loop. */
-                    if (errno != ECONNRESET) {
-                        close(sockfd);
-                        events[i].data.fd = -1;
-                        perror("read");
-                    }
-                } else if (readlen == 0) {
-                    printf("error:readline:%d\n", readlen);
-                    /* End of file. The remote has closed the
-                             connection. */
-                    close(sockfd);
-                    events[i].data.fd = -1;
-                }
-                //printf("line:%s readlen:%d\n", line, readlen);
-                read_pps++;
-                //ev.data.fd = sockfd;            //设置用于写操作的文件描述符
-                //ev.events = EPOLLOUT | EPOLLET; //设置用于注测的写操作事件
-                //修改sockfd上要处理的事件为EPOLLOUT
-                //epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd, &ev);
-            } else if (events[i].events & EPOLLOUT) { //写事件
-                write_pps++;
-                sockfd = events[i].data.fd;
-                sendto(sockfd, datapacket, sizeof(datapacket), 0, (struct sockaddr *)&clientaddr1, sizeof(struct sockaddr_in));
-                //ev.data.fd = sockfd;               //设置用于读操作的文件描述符
-                //ev.events = EPOLLIN | EPOLLET;     //设置用于注册的读操作事件
-                //修改sockfd上要处理的事件为EPOLIN
-                //epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd, &ev);
-            }
-        }
+               	
+		while(1)  {
+			readlen = recvfrom(sockfd, line, MAXLINE, 0, (struct sockaddr *)&clientaddr, &clilen);
+			if (readlen < 0) {
+				//printf("error:readlen:%d\n", readlen);
+				/* If errno == EAGAIN, that means we have read all
+				   data. So go back to the main loop. */
+				if (errno == EINTR) {
+					continue;
+				} else {
+				//	perror("xxx");
+					break;
+					//exit(0);
+				}
+			} 
+			//printf("line:%s readlen:%d\n", line, readlen);
+			read_pps++;
+		}
+		//ev.data.fd = sockfd;            //设置用于写操作的文件描述符
+		//ev.events = EPOLLOUT | EPOLLET; //设置用于注测的写操作事件
+		//修改sockfd上要处理的事件为EPOLLOUT
+		//epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd, &ev);
+	    } else if (events[i].events & EPOLLOUT) { //写事件
+		    write_pps++;
+		    sockfd = events[i].data.fd;
+		    sendto(sockfd, datapacket, sizeof(datapacket), 0, (struct sockaddr *)&clientaddr1, sizeof(struct sockaddr_in));
+		    //ev.data.fd = sockfd;               //设置用于读操作的文件描述符
+		    //ev.events = EPOLLIN | EPOLLET;     //设置用于注册的读操作事件
+		    //修改sockfd上要处理的事件为EPOLIN
+		    //epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd, &ev);
+	    }
+	}
     }
 }
