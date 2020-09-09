@@ -9,6 +9,7 @@ typedef struct student { //代表一个实际节点的结构
 } student_t;
 
 struct list_head student_list;
+struct list_head t;
 
 int main()
 {
@@ -40,6 +41,13 @@ int main()
         //打印一些信息，以备验证结果
         printf("student %d name: %s\n", student->num, student->name);
     }
+
+    INIT_LIST_HEAD(&t);
+    list_for_each_entry(student,&t,node) {
+	    printf("%d\n", student->num);
+    }
+
+
 
     return 0;
 }
